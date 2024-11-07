@@ -21,32 +21,51 @@ interface Offer {
 }
 
 // Mock API for Worldcoin price (replace with real API integration)
-const fetchWorldcoinPrice = async (): Promise<number | null> => {
+const fetchWorldcoinPrice = async () => {
   try {
-    // Replace with real API call, e.g., CoinGecko or CoinMarketCap
     const response = await fetch(
-      "https://api.coingecko.com/api/v3/simple/price?ids=worldcoin&vs_currencies=kes"
+      "https://api.binance.com/api/v3/ticker/price?symbol=WLDUSDT"
     );
     const data = await response.json();
-    return data.worldcoin.kes;
+    if (data && data.price) {
+      return data.price; // Set the price if successful
+    } else {
+      return null; // Handle case where price is not available
+    }
   } catch (error) {
-    console.error("Error fetching Worldcoin price:", error);
+    console.error("Error fetching Worldcoin price from Binance:", error);
+    return null; // Handle error
+  }
+};
+const fetchUSDTtoKES = async () => {
+  const API_KEY = `${process.env.API_KEY}`; // Replace with your ExchangeRate-API key
+  const url = `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/USD`;
+  console.log(url); // Fetching exchange rates for USDT
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log(JSON.stringify(data, undefined, 2));
+  } catch (error) {
+    console.error("Error fetching USDT to KES exchange rate:", error);
     return null;
   }
 };
-
-const Main: React.FC = () => {
+const Main = () => {
   const [price, setPrice] = useState<number | null>(null); // Price of Worldcoin
   const [loading, setLoading] = useState<boolean>(true); // Loading state
   const [offers, setOffers] = useState<Offer[]>([]); // List of offers from sellers
   const [isFetching, setIsFetching] = useState<boolean>(false); // For pull-to-refresh
   const navigation = useNavigation();
-
+  const [usdtKes, setUsdtKes] = useState<number | null>();
   // Fetch real-time Worldcoin price on component mount
   useEffect(() => {
     const getPrice = async () => {
       setLoading(true);
       const worldcoinPrice = await fetchWorldcoinPrice();
+      const usdtToKes = await fetchUSDTtoKES();
+      setUsdtKes(usdtToKes);
+      console.log(usdtToKes);
+
       setPrice(worldcoinPrice);
       setLoading(false);
     };
@@ -79,8 +98,10 @@ const Main: React.FC = () => {
   // Render the Buy Offers Section
   const renderOfferItem = ({ item }: { item: Offer }) => (
     <ThemedView style={styles.offerCard}>
-      <Text style={styles.sellerText}>{item.seller}</Text>
-      <Text style={styles.priceText}>Price: KES {item.price} / WLD</Text>
+      <ThemedText style={styles.sellerText}>{item.seller}</ThemedText>
+      <ThemedText style={styles.priceText}>
+        Price: KES {item.price} / WLD
+      </ThemedText>
       <Text style={styles.amountText}>Amount: {item.amount} WLD</Text>
       <TouchableOpacity
         style={styles.buyButton}
@@ -107,25 +128,12 @@ const Main: React.FC = () => {
         <ThemedText type="title" style={styles.title}>
           ● Coinance ●
         </ThemedText>
-        <Text style={styles.priceText}>
-          Current Worldcoin Price: KES{" "}
-          {price ? price.toLocaleString() : "Loading..."}
-        </Text>
+        <ThemedText type="defaultSemiBold">Current Worldcoin Price</ThemedText>
+        <ThemedText>
+          USD :{" "}
+          {price ? Number(price.toLocaleString()).toFixed(2) : "Loading..."}
+        </ThemedText>
       </View>
-
-      {/* Buyers Section */}
-      <ThemedView style={styles.sectionContainer}>
-        <ThemedText style={styles.sectionTitle}>Buy Worldcoin</ThemedText>
-
-        {/* FlatList to display available offers */}
-        <FlatList
-          data={offers}
-          renderItem={renderOfferItem}
-          keyExtractor={(item) => item.id.toString()}
-          refreshing={isFetching}
-          onRefresh={handleRefresh}
-        />
-      </ThemedView>
 
       {/* Sellers Section */}
       <ThemedView style={styles.sectionContainer}>
@@ -197,10 +205,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   amountText: {
-    fontSize: 14,
-    color: "#fff",
-  },
-  priceText: {
     fontSize: 14,
     color: "#fff",
   },
