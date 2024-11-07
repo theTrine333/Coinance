@@ -17,7 +17,7 @@ const Home = () => {
 
   const handleLogin = () => {
     setIsSubmitting(true);
-    navigation.navigate("home/main");
+    navigation.navigate("main");
     // Simulate a delay for the login process (e.g., API request)
     setTimeout(() => {
       setIsSubmitting(false);
@@ -106,7 +106,7 @@ const Home = () => {
           <ThemedText type="default" style={{ fontSize: 13 }}>
             Don't have an account?{" "}
           </ThemedText>
-          <Link href={"/auth/signup"}>
+          <Link href={"/signup"}>
             <ThemedText type="link" style={{ fontSize: 14 }}>
               Signup
             </ThemedText>

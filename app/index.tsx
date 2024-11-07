@@ -38,13 +38,14 @@ const fetchWorldcoinPrice = async () => {
   }
 };
 const fetchUSDTtoKES = async () => {
-  const API_KEY = `${process.env.API_KEY}`; // Replace with your ExchangeRate-API key
-  const url = `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/USD`;
+  const url =
+    "https://v6.exchangerate-api.com/v6/003dd1dbfc8d464a2ae45a54/latest/USD";
   console.log(url); // Fetching exchange rates for USDT
   try {
     const response = await fetch(url);
     const data = await response.json();
-    console.log(JSON.stringify(data, undefined, 2));
+    console.log("\n" + JSON.stringify(data, undefined, 2));
+    return data.conversion_rates.KES;
   } catch (error) {
     console.error("Error fetching USDT to KES exchange rate:", error);
     return null;
@@ -129,20 +130,24 @@ const Main = () => {
           ● Coinance ●
         </ThemedText>
         <ThemedText type="defaultSemiBold">Current Worldcoin Price</ThemedText>
-        <ThemedText>
-          USD :{" "}
-          {price ? Number(price.toLocaleString()).toFixed(2) : "Loading..."}
-        </ThemedText>
+        <ThemedView>
+          <ThemedText>
+            1 WLD : USD{" "}
+            {price ? Number(price.toLocaleString()).toFixed(2) : "Loading..."}
+          </ThemedText>
+          <ThemedText>
+            1 USD : KES{" "}
+            {usdtKes
+              ? Number(usdtKes.toLocaleString()).toFixed(2)
+              : "Loading..."}
+          </ThemedText>
+        </ThemedView>
       </View>
 
       {/* Sellers Section */}
       <ThemedView style={styles.sectionContainer}>
-        <ThemedText style={styles.sectionTitle}>Post New Offer</ThemedText>
-        <TouchableOpacity
-          style={styles.postOfferButton}
-          onPress={() => navigation.navigate("sell")}
-        >
-          <ThemedText style={styles.postOfferText}>Post New Offer</ThemedText>
+        <TouchableOpacity style={styles.postOfferButton}>
+          <ThemedText style={styles.postOfferText}>Reload</ThemedText>
         </TouchableOpacity>
       </ThemedView>
 

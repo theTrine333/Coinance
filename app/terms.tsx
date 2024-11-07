@@ -130,7 +130,7 @@ const Terms = () => {
         style={agreed ? Styles.agreeButtonDisabled : Styles.agreeButton}
         disabled={agreed}
         onPress={() => {
-          navigation.navigate("auth/login");
+          navigation.navigate("login");
         }}
       >
         <ThemedText type="defaultSemiBold">
