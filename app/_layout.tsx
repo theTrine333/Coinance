@@ -34,10 +34,27 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen
-          name="home"
-          options={{ headerTitleAlign: "center", title: "Home" }}
+          name="auth/login"
+          options={{
+            headerShown: false,
+          }}
         />
-        {/* <Stack.Screen name="+not-found" /> */}
+        <Stack.Screen
+          name="auth/signup"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="terms"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="home/main"
+          options={{ title: "Home", headerTitleAlign: "center" }}
+        />
       </Stack>
     </ThemeProvider>
   );
