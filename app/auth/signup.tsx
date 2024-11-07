@@ -1,4 +1,11 @@
-import { Image, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Text,
+} from "react-native";
 import React, { useState } from "react";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -10,9 +17,11 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
+  const [role, setRole] = useState("buyer"); // Default role is "buyer"
   const [agreed, setAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigation = useNavigation();
+
   const handleAgree = () => {
     setAgreed(!agreed);
   };
@@ -21,13 +30,14 @@ const Signup = () => {
     // For now, just log the user credentials to the console.
     console.log("Email:", email);
     console.log("Password:", password);
+    console.log("Role:", role); // Log the selected role
 
     setIsSubmitting(true);
 
     // Simulate a delay for the login process (e.g., API request)
     setTimeout(() => {
       setIsSubmitting(false);
-      // After successful login, you can navigate to the next screen or show a success message.
+      // After successful signup, navigate to the next screen or show a success message.
     }, 2000);
   };
 
@@ -50,7 +60,7 @@ const Signup = () => {
         ● Coinance ●
       </ThemedText>
 
-      {/* Login Form Section */}
+      {/* Signup Form Section */}
       <ThemedView style={Styles.subContainer}>
         <ThemedText
           style={{ fontSize: 14, textAlign: "center", paddingBottom: 20 }}
@@ -58,6 +68,8 @@ const Signup = () => {
         >
           Signup an account
         </ThemedText>
+
+        {/* Username Input */}
         <TextInput
           style={styles.input}
           placeholder="Unique username i.e @user123"
@@ -66,14 +78,17 @@ const Signup = () => {
           onChangeText={(text) => setUsername(text)}
           keyboardType="default"
         />
+
+        {/* Wallet Address Input */}
         <TextInput
           style={styles.input}
           placeholder="Wallet address"
           placeholderTextColor="#888"
-          value={username}
-          onChangeText={(text) => setUsername(text)}
+          value={walletAddress}
+          onChangeText={(text) => setWalletAddress(text)}
           keyboardType="default"
         />
+
         {/* Email Input */}
         <TextInput
           style={styles.input}
@@ -94,6 +109,25 @@ const Signup = () => {
           secureTextEntry
         />
 
+        {/* Role Selection (Radio buttons for Buyer/Seller) */}
+        <ThemedView style={styles.roleContainer}>
+          <Text style={styles.roleText}>Select your role:</Text>
+          <View style={styles.radioGroup}>
+            <TouchableOpacity
+              style={role === "buyer" ? styles.selectedRadio : styles.radio}
+              onPress={() => setRole("buyer")}
+            >
+              <ThemedText type="default">Buyer</ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={role === "seller" ? styles.selectedRadio : styles.radio}
+              onPress={() => setRole("seller")}
+            >
+              <ThemedText type="default">Seller</ThemedText>
+            </TouchableOpacity>
+          </View>
+        </ThemedView>
+
         {/* Agree to Terms and Conditions */}
         <ThemedView style={styles.termsContainer}>
           <ThemedText style={{ fontSize: 12 }} type="default">
@@ -104,7 +138,7 @@ const Signup = () => {
           </TouchableOpacity>
         </ThemedView>
 
-        {/* Login Button */}
+        {/* Sign Up Button */}
         <TouchableOpacity
           style={[
             styles.loginButton,
@@ -118,7 +152,7 @@ const Signup = () => {
         </TouchableOpacity>
       </ThemedView>
 
-      {/* Terms and Conditions Button */}
+      {/* Divider */}
       <ThemedView
         style={[
           {
@@ -158,6 +192,37 @@ const styles = StyleSheet.create({
   loginButton: {
     paddingVertical: 12,
     borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  roleContainer: {
+    marginBottom: 15,
+    flexDirection: "column",
+  },
+  roleText: {
+    fontSize: 14,
+    color: "#fff",
+    marginBottom: 10,
+  },
+  radioGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  radio: {
+    backgroundColor: "#ccc",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    width: "45%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  selectedRadio: {
+    backgroundColor: "#f2c025",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    width: "45%",
     alignItems: "center",
     justifyContent: "center",
   },

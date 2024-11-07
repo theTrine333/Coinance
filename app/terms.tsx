@@ -4,7 +4,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Styles } from "@/constants/Styles";
 import { Link, useNavigation } from "expo-router";
-const Home = () => {
+const Terms = () => {
   const [agreed, setAgreed] = useState();
   const navigation = useNavigation();
   const handleAgree = () => {};
@@ -141,7 +141,7 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Terms;
 const styles = StyleSheet.create({
   infoText: {
     paddingLeft: 10,
