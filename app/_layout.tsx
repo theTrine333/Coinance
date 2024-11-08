@@ -34,10 +34,6 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen
-          name="index"
-          options={{ title: "Home", headerTitleAlign: "center" }}
-        />
-        <Stack.Screen
           name="login"
           options={{
             headerShown: false,
@@ -54,6 +50,10 @@ export default function RootLayout() {
           options={{
             headerShown: false,
           }}
+        />
+        <Stack.Screen
+          name="index"
+          options={{ title: "Home", headerShown: false }}
         />
       </Stack>
     </ThemeProvider>

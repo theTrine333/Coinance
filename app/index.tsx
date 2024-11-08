@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import {
-  View,
-  Text,
   StyleSheet,
   TouchableOpacity,
-  FlatList,
   ActivityIndicator,
+  FlatList,
+  useColorScheme,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { Styles } from "@/constants/Styles";
+import { Styles, width } from "@/constants/Styles";
 import { useNavigation } from "expo-router";
-
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { BuyerCard } from "@/components/Cards";
 // Define types for the offer data
 interface Offer {
   id: number;
@@ -19,7 +19,43 @@ interface Offer {
   price: number;
   amount: number;
 }
-
+interface Buyer {
+  id: number;
+  name: string;
+  profilePic: string;
+  buyRate: number;
+  online: boolean;
+}
+const buyersData: Buyer[] = [
+  {
+    id: 1,
+    name: "Alice",
+    profilePic: "https://via.placeholder.com/50",
+    buyRate: 105,
+    online: true,
+  },
+  {
+    id: 2,
+    name: "Bob",
+    profilePic: "https://via.placeholder.com/50",
+    buyRate: 103,
+    online: true,
+  },
+  {
+    id: 3,
+    name: "Carol",
+    profilePic: "https://via.placeholder.com/50",
+    buyRate: 107,
+    online: false,
+  },
+  {
+    id: 4,
+    name: "Erick Ronald",
+    profilePic: "https://avatars.githubusercontent.com/u/148716108?v=4",
+    buyRate: 105,
+    online: true,
+  },
+];
 // Mock API for Worldcoin price (replace with real API integration)
 const fetchWorldcoinPrice = async () => {
   try {
@@ -40,11 +76,11 @@ const fetchWorldcoinPrice = async () => {
 const fetchUSDTtoKES = async () => {
   const url =
     "https://v6.exchangerate-api.com/v6/003dd1dbfc8d464a2ae45a54/latest/USD";
-  console.log(url); // Fetching exchange rates for USDT
+
   try {
     const response = await fetch(url);
     const data = await response.json();
-    console.log("\n" + JSON.stringify(data, undefined, 2));
+    //console.log("\n" + JSON.stringify(data, undefined, 2));
     return data.conversion_rates.KES;
   } catch (error) {
     console.error("Error fetching USDT to KES exchange rate:", error);
@@ -58,20 +94,19 @@ const Main = () => {
   const [isFetching, setIsFetching] = useState<boolean>(false); // For pull-to-refresh
   const navigation = useNavigation();
   const [usdtKes, setUsdtKes] = useState<number | null>();
+  const theme = useColorScheme() ?? "light";
   // Fetch real-time Worldcoin price on component mount
+  async function getPrices() {
+    setLoading(true);
+    const worldcoinPrice = await fetchWorldcoinPrice();
+    const usdtToKes = await fetchUSDTtoKES();
+    setUsdtKes(usdtToKes);
+
+    setPrice(worldcoinPrice);
+    setLoading(false);
+  }
   useEffect(() => {
-    const getPrice = async () => {
-      setLoading(true);
-      const worldcoinPrice = await fetchWorldcoinPrice();
-      const usdtToKes = await fetchUSDTtoKES();
-      setUsdtKes(usdtToKes);
-      console.log(usdtToKes);
-
-      setPrice(worldcoinPrice);
-      setLoading(false);
-    };
-
-    getPrice();
+    getPrices();
   }, []);
 
   // Mock offer data (in real life, this would be fetched from a database)
@@ -83,92 +118,76 @@ const Main = () => {
     ]);
   }, []);
 
-  // Pull-to-refresh to fetch new offers
-  const handleRefresh = async () => {
-    setIsFetching(true);
-    // Mock API refresh (in reality, you would fetch new offers from a backend)
-    setTimeout(() => {
-      setIsFetching(false);
-      setOffers([
-        ...offers,
-        { id: Math.random(), seller: "@new_seller", price: 815, amount: 0.5 },
-      ]);
-    }, 2000);
-  };
-
-  // Render the Buy Offers Section
-  const renderOfferItem = ({ item }: { item: Offer }) => (
-    <ThemedView style={styles.offerCard}>
-      <ThemedText style={styles.sellerText}>{item.seller}</ThemedText>
-      <ThemedText style={styles.priceText}>
-        Price: KES {item.price} / WLD
-      </ThemedText>
-      <Text style={styles.amountText}>Amount: {item.amount} WLD</Text>
-      <TouchableOpacity
-        style={styles.buyButton}
-        onPress={() => navigation.navigate("buy", { offer: item })}
-      >
-        <ThemedText style={styles.buyText}>Buy Now</ThemedText>
-      </TouchableOpacity>
-    </ThemedView>
-  );
-
-  // If price is loading, show a loading spinner
-  if (loading) {
-    return (
-      <ThemedView style={Styles.container}>
-        <ActivityIndicator size="large" color="#f2c025" />
-      </ThemedView>
-    );
-  }
-
   return (
-    <ThemedView style={Styles.container}>
+    <ThemedView
+      style={[
+        Styles.container,
+
+        {
+          paddingTop: 50,
+          justifyContent: "flex-start",
+          alignSelf: "flex-start",
+        },
+      ]}
+    >
+      <ThemedText type="title" style={styles.title}>
+        ● Coinance ●
+      </ThemedText>
+      <ThemedText type="defaultSemiBold">Current Worldcoin Price</ThemedText>
       {/* Header Section */}
-      <View style={styles.header}>
-        <ThemedText type="title" style={styles.title}>
-          ● Coinance ●
-        </ThemedText>
-        <ThemedText type="defaultSemiBold">Current Worldcoin Price</ThemedText>
+      <ThemedView
+        style={[
+          Styles.rowView,
+          {
+            width: width,
+            justifyContent: "space-between",
+            paddingHorizontal: 20,
+            alignItems: "center",
+          },
+        ]}
+      >
         <ThemedView>
-          <ThemedText>
-            1 WLD : USD{" "}
-            {price ? Number(price.toLocaleString()).toFixed(2) : "Loading..."}
-          </ThemedText>
-          <ThemedText>
-            1 USD : KES{" "}
-            {usdtKes
-              ? Number(usdtKes.toLocaleString()).toFixed(2)
-              : "Loading..."}
-          </ThemedText>
+          <ThemedView>
+            <ThemedText type="subtitle">
+              1 WLD : USD{" "}
+              {price ? Number(price.toLocaleString()).toFixed(2) : "Loading..."}
+            </ThemedText>
+            <ThemedText type="subtitle">
+              1 USD : KES{" "}
+              {usdtKes
+                ? Number(usdtKes.toLocaleString()).toFixed(2)
+                : "Loading..."}
+            </ThemedText>
+          </ThemedView>
         </ThemedView>
-      </View>
-
-      {/* Sellers Section */}
-      <ThemedView style={styles.sectionContainer}>
-        <TouchableOpacity style={styles.postOfferButton}>
-          <ThemedText style={styles.postOfferText}>Reload</ThemedText>
-        </TouchableOpacity>
+        {loading ? (
+          <ThemedView style={styles.postOfferButton}>
+            <ActivityIndicator color={"white"} size={24} />
+          </ThemedView>
+        ) : (
+          <TouchableOpacity
+            style={styles.postOfferButton}
+            onPress={() => {
+              getPrices();
+            }}
+          >
+            <Ionicons name="reload-circle-outline" size={24} color="white" />
+          </TouchableOpacity>
+        )}
       </ThemedView>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity onPress={() => navigation.navigate("profile")}>
-          <ThemedText type="default" style={styles.navText}>
-            Profile
-          </ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("settings")}>
-          <ThemedText type="default" style={styles.navText}>
-            Settings
-          </ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("transactions")}>
-          <ThemedText type="default" style={styles.navText}>
-            Transactions
-          </ThemedText>
-        </TouchableOpacity>
-      </View>
+      <FlatList
+        data={buyersData}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <BuyerCard buyer={item} />}
+        contentContainerStyle={{
+          paddingTop: 20,
+          paddingHorizontal: 10,
+          paddingBottom: 80,
+          alignSelf: "center",
+          backgroundColor: theme === "light" ? "lightgrey" : "#282c2e",
+          borderRadius: 12,
+        }}
+      />
     </ThemedView>
   );
 };
@@ -184,67 +203,11 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color: "#f2c025",
   },
-  priceText: {
-    fontSize: 18,
-    color: "#fff",
-    marginTop: 10,
-  },
-  sectionContainer: {
-    marginBottom: 30,
-    paddingHorizontal: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    color: "#fff",
-    marginBottom: 10,
-  },
-  offerCard: {
-    backgroundColor: "#2f2f2f",
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 10,
-  },
-  sellerText: {
-    fontSize: 16,
-    color: "#f2c025",
-    marginBottom: 5,
-  },
-  amountText: {
-    fontSize: 14,
-    color: "#fff",
-  },
-  buyButton: {
-    backgroundColor: "#f2c025",
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 10,
-  },
-  buyText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#fff",
-  },
   postOfferButton: {
+    alignSelf: "center",
     backgroundColor: "#f2c025",
-    paddingVertical: 12,
-    borderRadius: 8,
+    padding: 5,
+    borderRadius: 28,
     alignItems: "center",
-  },
-  postOfferText: {
-    fontSize: 16,
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  bottomNav: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 15,
-    borderTopWidth: 1,
-    borderColor: "#ccc",
-  },
-  navText: {
-    fontSize: 16,
-    color: "#fff",
   },
 });
