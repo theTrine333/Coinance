@@ -38,3 +38,81 @@ export const getBuyers = async () => {
     console.error("Error fetching buyer:", error);
   }
 };
+
+export const createBuyer = async ({
+  name,
+  buyRate,
+  profilePic,
+  walletAddress,
+}) => {
+  fetch(
+    "https://data.mongodb-api.com/app/myapp-abcde/endpoint/data/v1/action/insertOne",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/ejson",
+        Accept: "application/json",
+        apiKey:
+          "T2W94RTQetAwnVyz7NJZeoMOzLV1nIPq8jVPapF66OOD97NSY63XFQpoQBMY7xPL",
+      },
+      body: JSON.stringify({
+        collection: "Buyers",
+        database: "Coinance",
+        dataSource: "Trine",
+        document: {
+          name: name,
+          buyRate: buyRate,
+          profilePic: profilePic,
+          walletAddress: walletAddress,
+        },
+      }),
+    }
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => console.log("Success:", data))
+    .catch((error) => console.error("Error:", error));
+};
+
+export const createSeller = async ({
+  name,
+  buyRate,
+  profilePic,
+  walletAddress,
+}) => {
+  fetch(
+    "https://data.mongodb-api.com/app/myapp-abcde/endpoint/data/v1/action/insertOne",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/ejson",
+        Accept: "application/json",
+        apiKey:
+          "T2W94RTQetAwnVyz7NJZeoMOzLV1nIPq8jVPapF66OOD97NSY63XFQpoQBMY7xPL",
+      },
+      body: JSON.stringify({
+        collection: "Buyers",
+        database: "Coinance",
+        dataSource: "Trine",
+        document: {
+          name: name,
+          buyRate: buyRate,
+          profilePic: profilePic,
+          walletAddress: walletAddress,
+        },
+      }),
+    }
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => console.log("Success:", data))
+    .catch((error) => console.error("Error:", error));
+};

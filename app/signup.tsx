@@ -5,35 +5,43 @@ import {
   TouchableOpacity,
   View,
   Text,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Styles } from "@/constants/Styles";
 import { Link, useNavigation } from "expo-router";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/firebaseConfig";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [walletAddress, setWalletAddress] = useState("");
-  const [role, setRole] = useState("buyer"); // Default role is "buyer"
+  const [role, setRole] = useState("seller"); // Default role is "buyer"
   const [agreed, setAgreed] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigation = useNavigation();
-
   const handleAgree = () => {
     setAgreed(!agreed);
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // For now, just log the user credentials to the console.
     console.log("Email:", email);
     console.log("Password:", password);
     console.log("Role:", role); // Log the selected role
-
+    await createUserWithEmailAndPassword(auth, email, password);
     setIsSubmitting(true);
 
+    if (!email || !password || !walletAddress || !username) {
+      Alert.alert(
+        "Empty Fields",
+        "Please fill all the fields to create your account"
+      );
+    }
     // Simulate a delay for the login process (e.g., API request)
     setTimeout(() => {
       setIsSubmitting(false);
