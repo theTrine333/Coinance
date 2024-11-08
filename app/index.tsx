@@ -12,6 +12,7 @@ import { Styles, width } from "@/constants/Styles";
 import { useNavigation } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { BuyerCard } from "@/components/Cards";
+import { getBuyers } from "@/constants/database";
 // Define types for the offer data
 interface Offer {
   id: number;
@@ -90,10 +91,10 @@ const fetchUSDTtoKES = async () => {
 const Main = () => {
   const [price, setPrice] = useState<number | null>(null); // Price of Worldcoin
   const [loading, setLoading] = useState<boolean>(true); // Loading state
-  const [offers, setOffers] = useState<Offer[]>([]); // List of offers from sellers
-  const [isFetching, setIsFetching] = useState<boolean>(false); // For pull-to-refresh
+  const [isFetching, setIsFetching] = useState<boolean>(true); // For pull-to-refresh
   const navigation = useNavigation();
   const [usdtKes, setUsdtKes] = useState<number | null>();
+  const [buyers, setBuyers] = useState<Buyer[] | any>();
   const theme = useColorScheme() ?? "light";
   // Fetch real-time Worldcoin price on component mount
   async function getPrices() {
@@ -106,16 +107,15 @@ const Main = () => {
     setLoading(false);
   }
   useEffect(() => {
-    getPrices();
+    getPrices().then((e) => {
+      setBuyers(e);
+      setIsFetching(false);
+    });
   }, []);
 
   // Mock offer data (in real life, this would be fetched from a database)
   useEffect(() => {
-    setOffers([
-      { id: 1, seller: "@user123", price: 800, amount: 2 },
-      { id: 2, seller: "@crypto_king", price: 810, amount: 1.5 },
-      { id: 3, seller: "@kenya_trade", price: 805, amount: 3 },
-    ]);
+    getBuyers();
   }, []);
 
   return (
@@ -175,19 +175,26 @@ const Main = () => {
           </TouchableOpacity>
         )}
       </ThemedView>
-      <FlatList
-        data={buyersData}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <BuyerCard buyer={item} />}
-        contentContainerStyle={{
-          paddingTop: 20,
-          paddingHorizontal: 10,
-          paddingBottom: 80,
-          alignSelf: "center",
-          backgroundColor: theme === "light" ? "lightgrey" : "#282c2e",
-          borderRadius: 12,
-        }}
-      />
+      <ThemedText type="link">Select your preffed buyer</ThemedText>
+      {isFetching ? (
+        <ActivityIndicator />
+      ) : (
+        <FlatList
+          data={buyers}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => <BuyerCard buyer={item} />}
+          contentContainerStyle={{
+            paddingTop: 20,
+            marginTop: 5,
+            paddingHorizontal: 10,
+            paddingBottom: 80,
+            minWidth: "90%",
+            alignSelf: "center",
+            backgroundColor: theme === "light" ? "lightgrey" : "#282c2e",
+            borderRadius: 12,
+          }}
+        />
+      )}
     </ThemedView>
   );
 };
