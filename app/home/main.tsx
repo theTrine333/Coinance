@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   FlatList,
   useColorScheme,
+  Image,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -27,36 +28,6 @@ interface Buyer {
   buyRate: number;
   online: boolean;
 }
-const buyersData: Buyer[] = [
-  {
-    id: 1,
-    name: "Alice",
-    profilePic: "https://via.placeholder.com/50",
-    buyRate: 105,
-    online: true,
-  },
-  {
-    id: 2,
-    name: "Bob",
-    profilePic: "https://via.placeholder.com/50",
-    buyRate: 103,
-    online: true,
-  },
-  {
-    id: 3,
-    name: "Carol",
-    profilePic: "https://via.placeholder.com/50",
-    buyRate: 107,
-    online: false,
-  },
-  {
-    id: 4,
-    name: "Erick Ronald",
-    profilePic: "https://avatars.githubusercontent.com/u/148716108?v=4",
-    buyRate: 105,
-    online: true,
-  },
-];
 // Mock API for Worldcoin price (replace with real API integration)
 const fetchWorldcoinPrice = async () => {
   try {
@@ -88,7 +59,7 @@ const fetchUSDTtoKES = async () => {
     return null;
   }
 };
-const Home = () => {
+const Main = () => {
   const [price, setPrice] = useState<number | null>(null); // Price of Worldcoin
   const [loading, setLoading] = useState<boolean>(true); // Loading state
   const [isFetching, setIsFetching] = useState<boolean>(true); // For pull-to-refresh
@@ -102,7 +73,6 @@ const Home = () => {
     const worldcoinPrice = await fetchWorldcoinPrice();
     const usdtToKes = await fetchUSDTtoKES();
     setUsdtKes(usdtToKes);
-
     setPrice(worldcoinPrice);
     setLoading(false);
   }
@@ -112,10 +82,14 @@ const Home = () => {
 
   // Mock offer data (in real life, this would be fetched from a database)
   useEffect(() => {
-    getBuyers().then((e) => {
-      setBuyers(e);
-      setIsFetching(false);
-    });
+    getBuyers()
+      .then((e) => {
+        setBuyers(e);
+        setIsFetching(false);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }, []);
 
   return (
@@ -130,7 +104,15 @@ const Home = () => {
         },
       ]}
     >
-      <ThemedText type="title" style={styles.title}>
+      <ThemedView>
+        <Image
+          source={require("@/assets/images/icon.png")}
+          style={Styles.icon}
+          resizeMode="contain"
+        />
+      </ThemedView>
+
+      <ThemedText type="title" style={{ color: "#f2c025", paddingTop: 10 }}>
         ● Coinance ●
       </ThemedText>
       <ThemedText type="defaultSemiBold">Current Worldcoin Price</ThemedText>
@@ -188,7 +170,7 @@ const Home = () => {
             marginTop: 5,
             paddingHorizontal: 10,
             paddingBottom: 80,
-            minWidth: "90%",
+            minWidth: "8%",
             alignSelf: "center",
             backgroundColor: theme === "light" ? "lightgrey" : "#282c2e",
             borderRadius: 12,
@@ -199,7 +181,7 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Main;
 
 const styles = StyleSheet.create({
   header: {

@@ -4,7 +4,8 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Styles } from "@/constants/Styles";
 import { Link, useNavigation } from "expo-router";
-
+import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
+const auth = getAuth();
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,10 +16,12 @@ const Login = () => {
     setAgreed(!agreed);
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setIsSubmitting(true);
-    navigation.navigate("main");
-    // Simulate a delay for the login process (e.g., API request)
+    signInWithEmailAndPassword(auth, email, password).then((e) => {
+      navigation.navigate("home/main");
+    });
+
     setTimeout(() => {
       setIsSubmitting(false);
       // After successful login, you can navigate to the next screen or show a success message.

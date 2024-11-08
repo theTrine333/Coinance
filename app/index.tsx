@@ -4,7 +4,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Styles } from "@/constants/Styles";
 import { Link, useNavigation } from "expo-router";
-const Terms = () => {
+const Index = () => {
   const [agreed, setAgreed] = useState();
   const navigation = useNavigation();
   const handleAgree = () => {};
@@ -130,7 +130,7 @@ const Terms = () => {
         style={agreed ? Styles.agreeButtonDisabled : Styles.agreeButton}
         disabled={agreed}
         onPress={() => {
-          navigation.navigate("home");
+          navigation.navigate("login");
         }}
       >
         <ThemedText type="defaultSemiBold">
@@ -141,7 +141,7 @@ const Terms = () => {
   );
 };
 
-export default Terms;
+export default Index;
 const styles = StyleSheet.create({
   infoText: {
     paddingLeft: 10,

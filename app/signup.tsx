@@ -133,7 +133,7 @@ const Signup = () => {
           <ThemedText style={{ fontSize: 12 }} type="default">
             By signing up, you agree to our{" "}
           </ThemedText>
-          <TouchableOpacity onPress={() => navigation.navigate("terms")}>
+          <TouchableOpacity onPress={() => navigation.navigate("index")}>
             <ThemedText style={styles.link}>Terms & Conditions</ThemedText>
           </TouchableOpacity>
         </ThemedView>

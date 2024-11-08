@@ -52,13 +52,7 @@ export default function RootLayout() {
           }}
         />
         <Stack.Screen
-          name="terms"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="home"
+          name="home/main"
           options={{ title: "Home", headerShown: false }}
         />
       </Stack>
