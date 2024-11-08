@@ -132,13 +132,11 @@ const Main = () => {
           <ThemedView>
             <ThemedText type="subtitle">
               1 WLD : USD{" "}
-              {price ? Number(price.toLocaleString()).toFixed(2) : "Loading..."}
+              {price ? Number(price.toLocaleString()).toFixed(2) : ""}
             </ThemedText>
             <ThemedText type="subtitle">
               1 USD : KES{" "}
-              {usdtKes
-                ? Number(usdtKes.toLocaleString()).toFixed(2)
-                : "Loading..."}
+              {usdtKes ? Number(usdtKes.toLocaleString()).toFixed(2) : ""}
             </ThemedText>
           </ThemedView>
         </ThemedView>
@@ -172,7 +170,7 @@ const Main = () => {
             paddingBottom: 80,
             minWidth: "8%",
             alignSelf: "center",
-            backgroundColor: theme === "light" ? "lightgrey" : "#282c2e",
+            backgroundColor: theme === "light" ? "rgb(245,245,245)" : "#282c2e",
             borderRadius: 12,
           }}
         />

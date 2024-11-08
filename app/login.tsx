@@ -5,7 +5,8 @@ import { ThemedView } from "@/components/ThemedView";
 import { Styles } from "@/constants/Styles";
 import { Link, useNavigation } from "expo-router";
 import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
-const auth = getAuth();
+import { app } from "@/firebaseConfig";
+const auth = getAuth(app);
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,13 +19,15 @@ const Login = () => {
 
   const handleLogin = async () => {
     setIsSubmitting(true);
-    signInWithEmailAndPassword(auth, email, password).then((e) => {
-      navigation.navigate("home/main");
-    });
-
+    signInWithEmailAndPassword(auth, email, password)
+      .then((e) => {
+        navigation.navigate("home/main");
+      })
+      .catch((e) => {
+        console.log("Error", e);
+      });
     setTimeout(() => {
       setIsSubmitting(false);
-      // After successful login, you can navigate to the next screen or show a success message.
     }, 2000);
   };
 
