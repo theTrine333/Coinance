@@ -1,220 +1,164 @@
-import React, { useState, useEffect } from "react";
-import {
-  StyleSheet,
-  TouchableOpacity,
-  ActivityIndicator,
-  FlatList,
-  useColorScheme,
-} from "react-native";
+import { Image, ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { Styles, width } from "@/constants/Styles";
-import { useNavigation } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { BuyerCard } from "@/components/Cards";
-import { getBuyers } from "@/constants/database";
-// Define types for the offer data
-interface Offer {
-  id: number;
-  seller: string;
-  price: number;
-  amount: number;
-}
-interface Buyer {
-  id: number;
-  name: string;
-  profilePic: string;
-  buyRate: number;
-  online: boolean;
-}
-const buyersData: Buyer[] = [
-  {
-    id: 1,
-    name: "Alice",
-    profilePic: "https://via.placeholder.com/50",
-    buyRate: 105,
-    online: true,
-  },
-  {
-    id: 2,
-    name: "Bob",
-    profilePic: "https://via.placeholder.com/50",
-    buyRate: 103,
-    online: true,
-  },
-  {
-    id: 3,
-    name: "Carol",
-    profilePic: "https://via.placeholder.com/50",
-    buyRate: 107,
-    online: false,
-  },
-  {
-    id: 4,
-    name: "Erick Ronald",
-    profilePic: "https://avatars.githubusercontent.com/u/148716108?v=4",
-    buyRate: 105,
-    online: true,
-  },
-];
-// Mock API for Worldcoin price (replace with real API integration)
-const fetchWorldcoinPrice = async () => {
-  try {
-    const response = await fetch(
-      "https://api.binance.com/api/v3/ticker/price?symbol=WLDUSDT"
-    );
-    const data = await response.json();
-    if (data && data.price) {
-      return data.price; // Set the price if successful
-    } else {
-      return null; // Handle case where price is not available
-    }
-  } catch (error) {
-    console.error("Error fetching Worldcoin price from Binance:", error);
-    return null; // Handle error
-  }
-};
-const fetchUSDTtoKES = async () => {
-  const url =
-    "https://v6.exchangerate-api.com/v6/003dd1dbfc8d464a2ae45a54/latest/USD";
-
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    //console.log("\n" + JSON.stringify(data, undefined, 2));
-    return data.conversion_rates.KES;
-  } catch (error) {
-    console.error("Error fetching USDT to KES exchange rate:", error);
-    return null;
-  }
-};
-const Main = () => {
-  const [price, setPrice] = useState<number | null>(null); // Price of Worldcoin
-  const [loading, setLoading] = useState<boolean>(true); // Loading state
-  const [isFetching, setIsFetching] = useState<boolean>(true); // For pull-to-refresh
+import { Styles } from "@/constants/Styles";
+import { Link, useNavigation } from "expo-router";
+const Terms = () => {
+  const [agreed, setAgreed] = useState();
   const navigation = useNavigation();
-  const [usdtKes, setUsdtKes] = useState<number | null>();
-  const [buyers, setBuyers] = useState<Buyer[] | any>();
-  const theme = useColorScheme() ?? "light";
-  // Fetch real-time Worldcoin price on component mount
-  async function getPrices() {
-    setLoading(true);
-    const worldcoinPrice = await fetchWorldcoinPrice();
-    const usdtToKes = await fetchUSDTtoKES();
-    setUsdtKes(usdtToKes);
-
-    setPrice(worldcoinPrice);
-    setLoading(false);
-  }
-  useEffect(() => {
-    getPrices().then((e) => {
-      setBuyers(e);
-      setIsFetching(false);
-    });
-  }, []);
-
-  // Mock offer data (in real life, this would be fetched from a database)
-  useEffect(() => {
-    getBuyers();
-  }, []);
-
+  const handleAgree = () => {};
   return (
     <ThemedView
       style={[
         Styles.container,
-
-        {
-          paddingTop: 50,
-          justifyContent: "flex-start",
-          alignSelf: "flex-start",
-        },
+        { justifyContent: "flex-start", paddingTop: 60 },
       ]}
     >
-      <ThemedText type="title" style={styles.title}>
+      <ThemedView>
+        <Image
+          source={require("@/assets/images/icon.png")}
+          style={Styles.icon}
+          resizeMode="contain"
+        />
+      </ThemedView>
+      <ThemedText type="title" style={{ color: "#f2c025", paddingTop: 10 }}>
         ● Coinance ●
       </ThemedText>
-      <ThemedText type="defaultSemiBold">Current Worldcoin Price</ThemedText>
-      {/* Header Section */}
-      <ThemedView
-        style={[
-          Styles.rowView,
-          {
-            width: width,
-            justifyContent: "space-between",
-            paddingHorizontal: 20,
-            alignItems: "center",
-          },
-        ]}
-      >
-        <ThemedView>
-          <ThemedView>
-            <ThemedText type="subtitle">
-              1 WLD : USD{" "}
-              {price ? Number(price.toLocaleString()).toFixed(2) : "Loading..."}
-            </ThemedText>
-            <ThemedText type="subtitle">
-              1 USD : KES{" "}
-              {usdtKes
-                ? Number(usdtKes.toLocaleString()).toFixed(2)
-                : "Loading..."}
-            </ThemedText>
-          </ThemedView>
-        </ThemedView>
-        {loading ? (
-          <ThemedView style={styles.postOfferButton}>
-            <ActivityIndicator color={"white"} size={24} />
-          </ThemedView>
-        ) : (
-          <TouchableOpacity
-            style={styles.postOfferButton}
-            onPress={() => {
-              getPrices();
-            }}
-          >
-            <Ionicons name="reload-circle-outline" size={24} color="white" />
-          </TouchableOpacity>
-        )}
-      </ThemedView>
-      <ThemedText type="link">Select your preffed buyer</ThemedText>
-      {isFetching ? (
-        <ActivityIndicator />
-      ) : (
-        <FlatList
-          data={buyers}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <BuyerCard buyer={item} />}
-          contentContainerStyle={{
-            paddingTop: 20,
-            marginTop: 5,
-            paddingHorizontal: 10,
-            paddingBottom: 80,
-            minWidth: "90%",
-            alignSelf: "center",
-            backgroundColor: theme === "light" ? "lightgrey" : "#282c2e",
-            borderRadius: 12,
-          }}
+      <ThemedView style={styles.subContainer}>
+        <ThemedText
+          style={{ fontSize: 14, textAlign: "center", paddingBottom: 10 }}
+          type="subtitle"
+        >
+          Terms and Conditions
+        </ThemedText>
+        <ThemedView
+          style={[
+            {
+              borderColor: "grey",
+              marginTop: -5,
+              marginBottom: 5,
+            },
+          ]}
         />
-      )}
+        <ScrollView
+          style={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <ThemedText style={{ fontSize: 13 }} type="defaultSemiBold">
+            1. Introduction
+          </ThemedText>
+          <ThemedText style={styles.infoText} type="default">
+            - Welcome to the Coinance app.{"\n"}- Coinance is a secure and
+            easy-to-use mobile app that allows Kenyans to buy Worldcoin (WLD)
+            directly from their phones.{"\n"}- With simple payment methods like
+            M-Pesa, you can quickly and safely purchase Worldcoin and manage
+            your digital assets.{"\n"}- The app features fast transactions,
+            real-time updates, and a user-friendly interface designed for both
+            beginners and experienced crypto enthusiasts.{"\n"}- Whether you're
+            new to cryptocurrency or an active trader, Coinance provides a
+            seamless and reliable platform to buy Worldcoin in Kenya. {"\n"}- By
+            accessing and using this app, you agree to comply with the following
+            terms and conditions.
+            {"\n"}
+          </ThemedText>
+          <ThemedText style={{ fontSize: 13 }} type="defaultSemiBold">
+            2. User Responsibilities
+          </ThemedText>
+          <ThemedText style={styles.infoText}>
+            - Users must ensure that the information they provide is accurate.
+            {"\n"}- You are responsible for maintaining the confidentiality of
+            your information. {"\n"}
+          </ThemedText>
+          <ThemedText style={{ fontSize: 13 }} type="defaultSemiBold">
+            3. Privacy Policy
+          </ThemedText>
+          <ThemedText style={styles.infoText}>
+            - We respect your privacy and are committed to protecting your
+            personal data.
+            {"\n"}- Our privacy policy outlines the types of data we collect and
+            how we use it. {"\n"}
+          </ThemedText>
+          <ThemedText style={{ fontSize: 13 }} type="defaultSemiBold">
+            4. Limitation of Liability
+          </ThemedText>
+          <ThemedText style={styles.infoText}>
+            - The Serveur app is provided on an 'as is' basis.
+            {"\n"}- We still make no guarantees regarding the app's performance
+            or accuracy. {"\n"}
+          </ThemedText>
+          <ThemedText style={{ fontSize: 13 }} type="defaultSemiBold">
+            5. Modification
+          </ThemedText>
+          <ThemedText style={styles.infoText}>
+            - We reserve the right to update these terms and conditions at any
+            time.
+            {"\n"}- Any changes will be posted on this session. {"\n"}
+          </ThemedText>
+          <ThemedText style={{ fontSize: 13 }} type="defaultSemiBold">
+            6. Governing Law
+          </ThemedText>
+          <ThemedText style={styles.infoText}>
+            - These terms shall be governed by and construed in accordance with
+            the laws of your country of residence.{"\n"}
+          </ThemedText>
+          <ThemedText style={{ fontSize: 13 }} type="defaultSemiBold">
+            7. Termination
+          </ThemedText>
+          {/* Added margin to create space below the terms and conditions */}
+          <ThemedText style={[styles.infoText, { marginBottom: 40 }]}>
+            - We reserve the right to terminate user accounts that violate our
+            terms or engage in harmful activities.
+          </ThemedText>
+        </ScrollView>
+        <ThemedView
+          style={[
+            {
+              borderColor: "grey",
+              marginTop: 5,
+              marginBottom: 5,
+            },
+          ]}
+        />
+        <ThemedText style={{ fontSize: 13, paddingTop: 10 }} type="subtitle">
+          By clicking "Agree," you confirm that you have read and understood
+          these terms.
+        </ThemedText>
+      </ThemedView>
+
+      <TouchableOpacity
+        style={agreed ? Styles.agreeButtonDisabled : Styles.agreeButton}
+        disabled={agreed}
+        onPress={() => {
+          navigation.navigate("home");
+        }}
+      >
+        <ThemedText type="defaultSemiBold">
+          {agreed ? "Agreed" : "Agree"}
+        </ThemedText>
+      </TouchableOpacity>
     </ThemedView>
   );
 };
 
-export default Main;
-
+export default Terms;
 const styles = StyleSheet.create({
-  header: {
-    alignItems: "center",
-    marginBottom: 20,
+  infoText: {
+    paddingLeft: 10,
+    fontSize: 13,
   },
-  title: {
-    fontSize: 28,
-    color: "#f2c025",
+  subContainer: {
+    flex: 1,
+    shadowColor: "grey",
+    elevation: 4,
+    padding: 20,
+    borderRadius: 16,
+    marginHorizontal: 10,
   },
-  postOfferButton: {
-    alignSelf: "center",
-    backgroundColor: "#f2c025",
-    padding: 5,
-    borderRadius: 28,
-    alignItems: "center",
+  scrollContainer: {
+    borderRadius: 8,
+    paddingTop: 10,
+    marginHorizontal: -10,
+    paddingHorizontal: 10,
   },
 });

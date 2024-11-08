@@ -5,7 +5,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { Styles } from "@/constants/Styles";
 import { Link, useNavigation } from "expo-router";
 
-const Home = () => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [agreed, setAgreed] = useState(false);
@@ -78,7 +78,7 @@ const Home = () => {
           <ThemedText style={{ fontSize: 12 }} type="default">
             By logging in, you agree to our{" "}
           </ThemedText>
-          <TouchableOpacity onPress={() => navigation.navigate("terms")}>
+          <TouchableOpacity onPress={() => navigation.navigate("index")}>
             <ThemedText style={styles.link}>Terms & Conditions</ThemedText>
           </TouchableOpacity>
         </ThemedView>
@@ -128,7 +128,7 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Login;
 
 const styles = StyleSheet.create({
   input: {
